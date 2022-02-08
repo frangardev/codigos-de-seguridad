@@ -1,4 +1,5 @@
 import React from "react";
+import { Loading } from "./Loading";
 
 class ClassState extends React.Component{
     constructor(props){
@@ -6,9 +7,21 @@ class ClassState extends React.Component{
 
         this.state={
             error: false,
+            loading: false,
         }
     }
+    
+    componentDidUpdate(){
+        console.log('actualización');
+        if(!!this.state.loading){
+            setTimeout(()=>{
+                //Este setState vueve a llamar al componentDodUpDate, asi que se repite infinitamente. Por eso es importane que este dentro de un condicional para evitar esto
+                this.setState({loading : false})
 
+                this.setState({error : true})
+            }, 2000)
+        }
+    }
     render(){
         return(
             <section>
@@ -18,10 +31,14 @@ class ClassState extends React.Component{
                 {this.state.error && (
                     <p>Error: el código es incorrecto.</p>
                 )}
+                 {this.state.loading && (
+                //Se llamara al Loading cuando se hagan combios
+                   <Loading/>
+                )}
 
                 <input type="text" placeholder="Código de seguridad"/>
                 <button
-                    onClick={()=> this.setState({error: !this.state.error})}
+                    onClick={()=> this.setState({loading: !this.state.loading})}
                 >
                     Confirmar
                 </button>
