@@ -16,7 +16,6 @@ function UseState({ name }){
                 } else{
                     setError(true)
                 }
-
                 setLoading(false)
             }, 2000)
         } 
