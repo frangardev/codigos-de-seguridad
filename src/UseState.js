@@ -7,12 +7,15 @@ function UseState({ name }){
     const [value, setValue] = React.useState('')
     const [error, setError] = React.useState(false)
     const [loading, setLoading] = React.useState(false)
+    const [delite, setDelite] = React.useState(false)
+    const [confirmed, setConfirmed] = React.useState(false)
 
     React.useEffect(()=>{
         if(!!loading){
             setTimeout(()=>{
                 if(value === SEGURITY_CODE){
                     setError(false)
+                    setConfirmed(true)
                 } else{
                     setError(true)
                 }
@@ -21,36 +24,78 @@ function UseState({ name }){
         } 
     },[loading])
 
-    return(
-        <section>
-            <h2>{name}</h2>
-            <p>Por favor, escribe el código de seguridad</p>
-
-            {(error && !loading) && (
-                <p>Error: el código es incorrecto.</p>
-            )}
-
-            {loading && (
-                <p>Cargando...</p>
-            )}
-
-            <input type="text" 
-                placeholder="Código de seguridad"
-                value={value}
-                onChange={(event)=>{
-                    setValue(event.target.value)
+    //Estado inicial 
+    if(!delite && !confirmed){
+        return(
+            <section>
+                <h2>{name}</h2>
+                <p>Por favor, escribe el código de seguridad</p>
+    
+                {(error && !loading) && (
+                    <p>Error: el código es incorrecto.</p>
+                )}
+    
+                {loading && (
+                    <p>Cargando...</p>
+                )}
+    
+                <input type="text" 
+                    placeholder="Código de seguridad"
+                    value={value}
+                    onChange={(event)=>{
+                        setValue(event.target.value)
+                    }}
+                />
+                <button
+                    onClick={() => {
+                        setLoading(!loading) 
+                        // setError(false)
+                    }}
+                >
+                    Confirmar
+                </button>
+            </section>
+        )
+    } //Estado de confirmación
+    else if(!!confirmed && !delite){
+        return(
+            <React.Fragment>
+                <h2>Desea Eliminar useState</h2>
+                <button
+                onClick={()=>{
+                    setDelite(true)
                 }}
-            />
-            <button
-                onClick={() => {
-                    setLoading(!loading) 
-                    // setError(false)
+                >
+                    Si, deseo elinarlo
+                </button>
+                <button
+                onClick={()=>{
+                    setConfirmed(false)
+                    setValue('')
                 }}
-            >
-                Confirmar
-            </button>
-        </section>
-    )
+                >
+                    No, no deseo elinarlo
+                </button>
+            </React.Fragment>
+        )
+    }
+    //Estado de eliminado
+    else{
+        return(
+            <React.Fragment>
+                <h2>useState fue eliminado</h2>
+                <button
+                onClick={()=>{
+                    setDelite(false)
+                    setConfirmed(false)
+                    setValue('')
+                }}
+                >
+                    Me arrepentí, deseo volver atras
+                </button>
+            </React.Fragment>
+        )
+    }
 }
 
 export { UseState }
