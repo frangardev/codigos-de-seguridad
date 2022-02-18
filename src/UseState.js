@@ -4,51 +4,76 @@ function UseState({ name }){
 
     const SEGURITY_CODE = 'paradigma'
 
-    const [value, setValue] = React.useState('')
-    const [error, setError] = React.useState(false)
-    const [loading, setLoading] = React.useState(false)
-    const [delite, setDelite] = React.useState(false)
-    const [confirmed, setConfirmed] = React.useState(false)
+    // const [value, setValue] = React.useState('')
+    // const [error, setError] = React.useState(false)
+    // const [loading, setLoading] = React.useState(false)
+    // const [delite, setDelite] = React.useState(false)
+    // const [confirmed, setConfirmed] = React.useState(false)
+
+    //Estados compuestos
+    const [state, setState] = React.useState({
+        error: false,
+        loading: false,
+        delite: false,
+        confirmed: false,
+        value: ''
+    })
 
     React.useEffect(()=>{
-        if(!!loading){
+        if(!!state.loading){
             setTimeout(()=>{
-                if(value === SEGURITY_CODE){
-                    setError(false)
-                    setConfirmed(true)
+                if(state.value === SEGURITY_CODE){
+                    setState({
+                        ...state,
+                        error: false,
+                        confirmed:true,
+                        loading: false
+                    })
                 } else{
-                    setError(true)
+                    setState({
+                        ...state,
+                        error: true,
+                        loading: false
+                    })
                 }
-                setLoading(false)
             }, 2000)
         } 
-    },[loading])
+    },[state.loading])
 
     //Estado inicial 
-    if(!delite && !confirmed){
+    if(!state.delite && !state.confirmed){
         return(
             <section>
                 <h2>{name}</h2>
                 <p>Por favor, escribe el código de seguridad</p>
     
-                {(error && !loading) && (
+                {(state.error && !state.loading) && (
                     <p>Error: el código es incorrecto.</p>
                 )}
     
-                {loading && (
+                {!!state.loading && (
                     <p>Cargando...</p>
                 )}
     
-                <input type="text" 
+                <input 
+                    type="text" 
+                    required
                     placeholder="Código de seguridad"
-                    value={value}
+                    value={state.value}
                     onChange={(event)=>{
-                        setValue(event.target.value)
+                        setState({
+                            ...state,
+                            value: (event.target.value)
+                        })
                     }}
                 />
                 <button
                     onClick={() => {
-                        setLoading(!loading) 
+                        setState({
+                            ...state,
+                            loading: !state.loading
+                        })
+                        // setLoading(!loading) 
                         // setError(false)
                     }}
                 >
@@ -57,21 +82,27 @@ function UseState({ name }){
             </section>
         )
     } //Estado de confirmación
-    else if(!!confirmed && !delite){
+    else if(!!state.confirmed && !state.delite){
         return(
             <React.Fragment>
                 <h2>Desea Eliminar useState</h2>
                 <button
                 onClick={()=>{
-                    setDelite(true)
+                    setState({
+                        ...state,
+                        delite: true
+                    })
                 }}
                 >
                     Si, deseo elinarlo
                 </button>
                 <button
                 onClick={()=>{
-                    setConfirmed(false)
-                    setValue('')
+                    setState({
+                        ...state,
+                        confirmed: false,
+                        value: ''
+                    })
                 }}
                 >
                     No, no deseo elinarlo
@@ -86,9 +117,12 @@ function UseState({ name }){
                 <h2>useState fue eliminado</h2>
                 <button
                 onClick={()=>{
-                    setDelite(false)
-                    setConfirmed(false)
-                    setValue('')
+                    setState({
+                        ...state,
+                        confirmed: false,
+                        delite: false,
+                        value: ''
+                    })
                 }}
                 >
                     Me arrepentí, deseo volver atras
