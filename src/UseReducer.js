@@ -1,76 +1,18 @@
 import React from "react";
 
-function UseState({ name }){
+function UseReducer({ name }){
 
     const SEGURITY_CODE = 'paradigma'
 
-    // const [value, setValue] = React.useState('')
-    // const [error, setError] = React.useState(false)
-    // const [loading, setLoading] = React.useState(false)
-    // const [delite, setDelite] = React.useState(false)
-    // const [confirmed, setConfirmed] = React.useState(false)
-
-    //Estados compuestos
-    const [state, setState] = React.useState({
-        error: false,
-        loading: false,
-        delite: false,
-        confirmed: false,
-        value: ''
-    })
-
-
-    //Declarando los estados
-    const onConfirmed = ()=>{
-        setState({
-            ...state,
-            error: false,
-            confirmed:true,
-            loading: false
-        })
-    }
-    const onError = () => {
-        setState({
-            ...state,
-            error: true,
-            loading: false
-        })
-    }
-    const onLoading = () => {
-        setState({
-            ...state,
-            loading: !state.loading
-        })
-    }
-    const onWrite = (value) => {
-        setState({
-            ...state,
-            value: value
-        })
-    }
-    const onDelite = () => {
-        setState({
-            ...state,
-            delite: true
-        })
-    }
-    const onReset = () => {
-        setState({
-            ...state,
-            confirmed: false,
-            delite: false,
-            value: ''
-        })
-    }
-
+    const [state, dispatch ] = React.useReducer(reducer, initialState)
 
     React.useEffect(()=>{
         if(!!state.loading){
             setTimeout(()=>{
                 if(state.value === SEGURITY_CODE){
-                    onConfirmed()
+                    dispatch({ type: 'CONFIRMED' })
                 } else{
-                   onError()
+                   dispatch({ type: 'ERROR' })
                 }
             }, 2000)
         } 
@@ -98,12 +40,14 @@ function UseState({ name }){
                     placeholder="Código de seguridad"
                     value={state.value}
                     onChange={(event)=>{
-                        onWrite(event.target.value)
+                        // onWrite(event.target.value)
+                        dispatch({ type: 'WRITE', playload: event.target.value })
                     }}
                 />
                 <button
                     onClick={() => {
-                       onLoading()
+                    //    onLoading()
+                        dispatch({ type: 'LOADING' })
                     }}
                 >
                     Confirmar
@@ -117,14 +61,15 @@ function UseState({ name }){
                 <h2>Desea Eliminar useState</h2>
                 <button
                 onClick={()=>{
-                    onDelite()
+                    // onDelite()
+                    dispatch({ type: 'DELITE' })
                 }}
                 >
                     Si, deseo elinarlo
                 </button>
                 <button
                 onClick={()=>{
-                    onReset()
+                    dispatch({ type: 'RESET' })
                 }}
                 >
                     No, no deseo elinarlo
@@ -139,7 +84,7 @@ function UseState({ name }){
                 <h2>useState fue eliminado</h2>
                 <button
                 onClick={()=>{
-                   onReset()
+                   dispatch({ type: 'RESET' })
                 }}
                 >
                     Me arrepentí, deseo volver atras
@@ -149,4 +94,54 @@ function UseState({ name }){
     }
 }
 
-export { UseState }
+const initialState = {
+    error: false,
+    loading: false,
+    delite: false,
+    confirmed: false,
+    value: ''
+}
+
+const reducerOBJECT = (state, action) => ({
+    'ERROR': {
+        ...state,
+        error: true,
+        loading: false,
+    },
+    'CONFIRMED': {
+        ...state,
+        error: false,
+        loading: false,
+        confirmed: true,
+    },
+    'LOADING': {
+        ...state,
+        loading: !state.loading
+    },
+    'WRITE': {
+        ...state,
+        value: action
+    },
+    'DELITE': {
+        ...state,
+        delite: true
+    },
+    'RESET': {
+        ...state,
+        confirmed: false,
+        delite: false,
+        value: ''
+    }
+ })
+  
+ const reducer = (state, action) => {
+    if (reducerOBJECT(state)[action.type]) {
+        return reducerOBJECT(state, action.playload)[action.type];
+    } else {
+        return {
+            ...state,
+        }
+    }
+ }
+
+export { UseReducer }
