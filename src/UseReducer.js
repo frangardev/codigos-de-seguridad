@@ -1,18 +1,27 @@
 import React from "react";
 
 function UseReducer({ name }){
-
     const SEGURITY_CODE = 'paradigma'
 
     const [state, dispatch ] = React.useReducer(reducer, initialState)
+
+    const onConfirmed = ()=> dispatch({ type: actionTypes.confirmed })
+    const onError = () => dispatch({ type: actionTypes.error })
+    const onLoading = () => dispatch({ type: actionTypes.loading })
+    const onDelite = () => dispatch({ type: actionTypes.delite })
+    const onReset = () => dispatch({ type: actionTypes.reset })
+    const onWrite = (event) => {
+        //onChange manda pordefecto el evento
+        dispatch({ type: actionTypes.write, playload: event.target.value })
+    }
 
     React.useEffect(()=>{
         if(!!state.loading){
             setTimeout(()=>{
                 if(state.value === SEGURITY_CODE){
-                    dispatch({ type: 'CONFIRMED' })
+                    onConfirmed()
                 } else{
-                   dispatch({ type: 'ERROR' })
+                   onError()
                 }
             }, 2000)
         } 
@@ -39,16 +48,10 @@ function UseReducer({ name }){
                     required
                     placeholder="Código de seguridad"
                     value={state.value}
-                    onChange={(event)=>{
-                        // onWrite(event.target.value)
-                        dispatch({ type: 'WRITE', playload: event.target.value })
-                    }}
+                    onChange={ onWrite }
                 />
                 <button
-                    onClick={() => {
-                    //    onLoading()
-                        dispatch({ type: 'LOADING' })
-                    }}
+                    onClick={ onLoading }
                 >
                     Confirmar
                 </button>
@@ -59,19 +62,10 @@ function UseReducer({ name }){
         return(
             <React.Fragment>
                 <h2>Desea Eliminar useState</h2>
-                <button
-                onClick={()=>{
-                    // onDelite()
-                    dispatch({ type: 'DELITE' })
-                }}
-                >
+                <button onClick={ onDelite }>
                     Si, deseo elinarlo
                 </button>
-                <button
-                onClick={()=>{
-                    dispatch({ type: 'RESET' })
-                }}
-                >
+                <button onClick={ onReset }>
                     No, no deseo elinarlo
                 </button>
             </React.Fragment>
@@ -82,16 +76,21 @@ function UseReducer({ name }){
         return(
             <React.Fragment>
                 <h2>useState fue eliminado</h2>
-                <button
-                onClick={()=>{
-                   dispatch({ type: 'RESET' })
-                }}
-                >
+                <button onClick={ onReset }>
                     Me arrepentí, deseo volver atras
                 </button>
             </React.Fragment>
         )
     }
+}
+
+const actionTypes = {
+    error: 'ERROR',
+    confirmed: 'CONFIRMED',
+    loading: 'LOADING',
+    write: 'WRITE',
+    delite: 'DELITE',
+    reset: 'RESET',
 }
 
 const initialState = {
@@ -103,37 +102,36 @@ const initialState = {
 }
 
 const reducerOBJECT = (state, action) => ({
-    'ERROR': {
+    [actionTypes.error]: {
         ...state,
         error: true,
         loading: false,
     },
-    'CONFIRMED': {
+    [actionTypes.confirmed]: {
         ...state,
         error: false,
         loading: false,
         confirmed: true,
     },
-    'LOADING': {
+    [actionTypes.loading]: {
         ...state,
         loading: !state.loading
     },
-    'WRITE': {
+    [actionTypes.write]: {
         ...state,
         value: action
     },
-    'DELITE': {
+    [actionTypes.delite]: {
         ...state,
         delite: true
     },
-    'RESET': {
+    [actionTypes.reset]: {
         ...state,
         confirmed: false,
         delite: false,
         value: ''
     }
  })
-  
  const reducer = (state, action) => {
     if (reducerOBJECT(state)[action.type]) {
         return reducerOBJECT(state, action.playload)[action.type];
